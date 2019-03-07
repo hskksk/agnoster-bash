@@ -229,8 +229,14 @@ prompt_context() {
 
 # prints history followed by HH:MM, useful for remembering what
 # we did previously
-prompt_histdt() {
-    prompt_segment black default "\! [\A]"
+prompt_hist() {
+    prompt_segment black default "\!"
+}
+
+# prints history followed by HH:MM, useful for remembering what
+# we did previously
+prompt_dt() {
+    prompt_segment yellow black "\$(date '+%m/%d(%a) %H:%M')"
 }
 
 
@@ -291,7 +297,7 @@ __command_rprompt() {
               MTV:US/Pacific TOK:Asia/Tokyo; do
         [ $n -gt 40 ] || break
         times="$times ${tz%%:*}\e[30;1m:\e[0;36;1m"
-        times="$times$(TZ=${tz#*:} date +%H:%M)\e[0m"
+        times="$times$(TZ=${tz#*:} date '+%Y/%m/%d(%a) %H:%M:%S')\e[0m"
         n=$(( $n - 10 ))
     done
     [ -z "$times" ] || printf "%${n}s$times\\r" ''
@@ -392,9 +398,10 @@ prompt_emacsdir() {
 ## Main prompt
 
 build_prompt() {
-    [[ ! -z ${AG_EMACS_DIR+x} ]] && prompt_emacsdir
+    #[[ ! -z ${AG_EMACS_DIR+x} ]] && prompt_emacsdir
     prompt_status
-    #[[ -z ${AG_NO_HIST+x} ]] && prompt_histdt
+    [[ -z ${AG_NO_HIST+x} ]] && prompt_hist
+    prompt_dt
     [[ -z ${AG_NO_CONTEXT+x} ]] && prompt_context
     prompt_virtualenv
     prompt_dir
@@ -416,7 +423,8 @@ set_bash_prompt() {
     build_prompt
 
     # uncomment below to use right prompt
-    PS1='\[$(tput sc; printf "%*s" $COLUMNS "$PRIGHT"; tput rc)\]${PR} \d \t \n$ '
+    # PS1='\[$(tput sc; printf "%*s" $COLUMNS "$PRIGHT"; tput rc)\]'$PR
+    PS1='\[$(tput sc; printf "%*s" $COLUMNS "$PRIGHT"; tput rc)\]'"${PR}\n$ "
     # PS1=$PR
 }
 
